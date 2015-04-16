@@ -4,6 +4,7 @@
 #include <vector>
 #include <bitset>
 #include <unordered_map>
+#include <cstdio>
 
 void PopulateOpMap(std::unordered_map<std::string, std::string>& op_map) {
   op_map[std::string("000000")] = "function";
@@ -41,7 +42,7 @@ class MIPSInstruction {
   std::string FuncStr();
   std::bitset<32> instr_bits_;
   std::string instr_hex_;
-  std::string instr_bits_str_;
+  std::string instr_bits_full_;
   std::string instr_bits_op_;
  private:
   friend std::istream& operator >> (std::istream& ost, MIPSInstruction& mips_instruction);
@@ -49,14 +50,14 @@ class MIPSInstruction {
 };
 
 std::string MIPSInstruction::FuncStr() {
-  return std::bitset<11>(instr_bits_str_.substr(21, 11)).to_string();
+  return std::bitset<11>(instr_bits_full_.substr(21, 11)).to_string();
 }
 
 void MIPSInstruction::SetValues() {
   int instr_bits = std::stoul(instr_hex_, nullptr, 16);
   instr_bits_ = instr_bits;
-  instr_bits_str_ = instr_bits_.to_string();
-  instr_bits_op_ = instr_bits_str_.substr(0, 6);
+  instr_bits_full_ = instr_bits_.to_string();
+  instr_bits_op_ = instr_bits_full_.substr(0, 6);
 }
 
 std::istream& operator >> (std::istream& ist, MIPSInstruction& mips_instruction) {
@@ -91,12 +92,13 @@ int main(int argc, char** argv) {
   }
   for (auto& mips_instruction : mips_instructions) {
     std::string op = op_map[mips_instruction.instr_bits_op_];
-    std::cout << "Hex: " << mips_instruction << "\tFunction: " << mips_instruction.FuncStr() << " ";
     if (op == "function") {
       op = func_map[mips_instruction.FuncStr()];
-      std::cout << "Op: " << op;
     }
-    std::cout << std::endl;
+    printf("Op: %s\n%32s\n%32s\n\n", 
+            op.c_str(), mips_instruction.instr_bits_full_.c_str(),
+            mips_instruction.FuncStr().c_str());
+
   }
   return 0;
 }
