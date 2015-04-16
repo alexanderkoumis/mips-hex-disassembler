@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
-project(mips-assembler)
+project(mips-disassembler)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -gdwarf-3")
+set(CMAKE_CXX_FLAGS "-std=c++11")
 
-add_executable(mips-assembler main.cpp)
+add_executable(mips-disassembler main.cpp mips_instruction.cpp)
