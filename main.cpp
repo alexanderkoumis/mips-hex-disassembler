@@ -47,7 +47,7 @@ void PrintUsage() {
 int main(int argc, char** argv) {
 
   bool bOptEveryOther = false;
-  int instr_count_ = 0;
+  int instr_count_ = 1;
 
   if (argc != 2 && argc != 3) {
     PrintUsage();
