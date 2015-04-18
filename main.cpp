@@ -38,11 +38,23 @@ void PopulateFuncMap(std::unordered_map<std::string, std::string>& func_map) {
   func_map[std::string("00000100011")] = "subu";
 }
 
+void PrintUsage() {
+  printf("\n\nUsage: ./assembler <path-to-asm-file> <options>  \n\n"
+         "             Options: -h: Print out every other line \n\n");
+  exit(1);
+}
+
 int main(int argc, char** argv) {
 
-  if (argc != 2) {
-    printf("Usage: ./assembler <path-to-asm-file>\n");
-    return 1;
+  bool bOptEveryOther = false;
+  int instr_count_ = 0;
+
+  if (argc != 2 && argc != 3) {
+    PrintUsage();
+  }
+
+  if (argc == 3 && argv[2][0] == '-' && argv[2][1] == 'h') {
+    bOptEveryOther = true;
   }
 
   std::vector<MIPSInstruction> mips_instructions;
@@ -57,13 +69,16 @@ int main(int argc, char** argv) {
   while (mips_file >> mips_instr) {
     mips_instructions.push_back(mips_instr);
   }
-  printf("%-08s%-30s\n", "Op", "Binary");
+  printf("%-08s%-10s%-30s\n", "Op", "Hex", "Binary");
   for (auto& mips_instruction : mips_instructions) {
+    if (bOptEveryOther && (instr_count_++ % 2 == 0)) {
+      continue;
+    }
     std::string op = op_map[mips_instruction.instr_bits_op_];
     if (op == "function") {
       op = func_map[mips_instruction.FuncStr()];
     }
-    printf("%-08s%-30s\n", op.c_str(), mips_instruction.instr_bits_full_.c_str());
+    printf("%-08s%-10s%-30s\n", op.c_str(), mips_instruction.instr_hex_.c_str(), mips_instruction.instr_bits_full_.c_str());
   }
   return 0;
 
